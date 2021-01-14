@@ -1,0 +1,19 @@
+.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\nominal.jsim"
+.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\lab1checkoff.jsim"
+
+* INVERTER: input is  Point2, output is Z
+.subckt inv Point2 Z
+MPD1 Z Point2 0 0 NENH sw=16 sl=1
+MPU1 Z Point2 vdd vdd PENH sw=16 sl=1
+.ends
+
+.subckt F A B C Z
+MPU1 point1 A vdd vdd PENH sw=8 sl=1
+MPU2 point1 B vdd vdd PENH sw=8 sl=1
+MPU3 Point2 C point1 vdd PENH sw=8 sl=1
+MPD1 Point2 A 1 0 NENH sw=8 sl=1
+MPD2 1 B 0 0 NENH sw=8 sl=1
+MPD3 Point2 C 0 0 NENH sw=8 sl=1
+
+Xdriver Point2 Z inv
+.ends
