@@ -1,0 +1,99 @@
+.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\nominal.jsim"
+.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\stdcell.jsim"
+.include "C:\Users\kanan\Desktop\Comp Struct\2dcheckoff_6ns.jsim"
+*.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\8clocks.jsim"
+
+*OR gate
+.subckt OR a b out1
+X_inv1 a a_out inverter
+X_inv2 b b_out inverter
+X_nand3 a_out b_out out1 nand2
+.ends
+
+*AND2 gate
+.subckt AND2 a b out2
+X_nand4 a b ab_out nand2
+X_nand5 ab_out out2 inverter
+.ends
+
+*Block X
+.subckt X a b ci gi pi s 
+X_AND1 a b gi AND2
+X_OR1 a b pi OR
+X_XOR1 a b z xor2
+X_XOR2 z ci s xor2
+.ends
+
+*Block Y
+.subckt Y Gh Ph PL GL CL GHL PHL CH
+X_AND1 Ph GL z AND2
+X_OR1 Gh z GHL OR
+X_AND2 Ph PL PHL AND2
+X_AND3 CL PL y AND2
+X_OR y GL CH OR
+.ends
+
+*Full Adder
+.subckt FA a b ci s co
+Xnand1 a b out1 nand2
+Xnand2 a out1 out2 nand2
+Xnand3 b out1 out3 nand2 
+Xnand4 out2 out3 out4 nand2
+
+Xnand5 out4 ci out5 nand2
+Xnand6 out4 out5 out6 nand2
+Xnand7 ci out5 out7 nand2
+Xnand8 out6 out7 S nand2
+
+Xnand9 out1 out5 co nand2
+.ends
+
+.subckt bit8 A[0:7] B[0:7] C0 G_OUT P_OUT S[0:7]
+
+*First layer
+X_blockX A[0:7] B[0:7] C[0:7] G[0:7] P[0:7] S[0:7] X
+
+*Second layer
+X_Y0 G1 P1 P0 G0 C0 G10 P10 C1 Y
+X_Y1 G3 P3 P2 G2 C2 G32 P32 C3 Y
+X_Y2 G5 P5 P4 G4 C4 G54 P54 C5 Y
+X_Y3 G7 P7 P6 G6 C6 G76 P76 C7 Y 
+
+*Third Layer 
+X_Y4 G32 P32 P10 G10 C0 GY4 PY4 C2 Y
+X_Y5 G76 P76 P54 G54 C4 GY5 PY5 C6 Y
+
+*Fourth Layer
+X_Y6 GY5 PY5 PY4 GY4 C0 G_OUT P_OUT C4 Y
+.ends
+
+.subckt adder32 op0 A[31:0] B[31:0] S[31:0] z v n
+
+* XOR for B
+X_XOR op0#32 B[31:0] B_Star[31:0] xor2
+
+*Individual sets
+Xfirst_adder A0 B_Star0 op0 s0 C0 FA
+Xnext_adder A[15:1] B_Star[15:1] C[14:0] s[15:1] C[15:1] FA
+X_set2 A[16:23] B_star[16:23] C15 GY3 PY3 S[16:23] bit8
+X_set3 A[24:31] B_star[24:31] C16 GY4 PY4 S[24:31] bit8
+X_GP2 GY4 PY4 PY3 GY3 C15 GB PB C16 Y
+
+*V
+X_inv1 S31 inverted_S31 inverter
+X_inv2 A31 inverted_A31 inverter
+X_inv3 B_star31 inverted_Bstar31 inverter
+X_and1 A31 B_star31 inverted_S31 inv_v1 nand3
+Xinv_and1 inv_v1 v1 inverter
+X_and2 inverted_A31 inverted_Bstar31 S31 inv_v2 nand3
+Xinv_and2 inv_v2 v2 inverter
+X_or v1 v2 v OR
+
+*N
+.connect n S31
+
+*Z
+Xnor4_8 S[7:0] S[15:8] S[23:16] S[31:24] out[7:0] nor4
+Xnand4_2 out[1:0] out[3:2] out[5:4] out[7:6] next_output[1:0] nand4 
+Xnor2 next_output0 next_output1 z nor2
+.ends

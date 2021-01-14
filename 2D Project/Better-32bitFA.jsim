@@ -1,0 +1,91 @@
+.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\nominal.jsim"
+.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\stdcell.jsim"
+.include "C:\Users\kanan\Desktop\Comp Struct\2dcheckoff_3ns.jsim"
+
+*OR gate
+.subckt OR a b out1
+X_inv1 a a_out inverter
+X_inv2 b b_out inverter
+X_nand3 a_out b_out out1 nand2
+.ends
+
+*AND2 gate
+.subckt AND2 a b out2
+X_nand4 a b ab_out nand2
+X_nand5 ab_out out2 inverter
+.ends
+
+*Block X
+.subckt X a b ci gi pi s 
+X_AND1 a b gi AND2
+X_OR1 a b pi OR
+X_XOR1 a b z xor2
+X_XOR2 z ci s xor2
+.ends
+
+*Block Y
+.subckt Y Gh Ph PL GL CL GHL PHL CH
+X_AND1 Ph GL z AND2
+X_OR1 Gh z GHL OR
+X_AND2 Ph PL PHL AND2
+X_AND3 CL PL y AND2
+X_OR y GL CH OR
+.ends
+
+.subckt bit8 A[0:7] B[0:7] C0 G_OUT P_OUT S[0:7]
+
+*First layer
+X_blockX A[0:7] B[0:7] C[0:7] G[0:7] P[0:7] S[0:7] X
+
+*Second layer
+X_Y0 G1 P1 P0 G0 C0 G10 P10 C1 Y
+X_Y1 G3 P3 P2 G2 C2 G32 P32 C3 Y
+X_Y2 G5 P5 P4 G4 C4 G54 P54 C5 Y
+X_Y3 G7 P7 P6 G6 C6 G76 P76 C7 Y 
+
+*Third Layer 
+X_Y4 G32 P32 P10 G10 C0 GY4 PY4 C2 Y
+X_Y5 G76 P76 P54 G54 C4 GY5 PY5 C6 Y
+
+*Fourth Layer
+X_Y6 GY5 PY5 PY4 GY4 C0 G_OUT P_OUT C4 Y
+.ends
+
+.subckt adder32 op0 A[31:0] B[31:0] S[31:0] z v n
+
+* XOR for B
+X_XOR op0#32 B[31:0] B_Star[31:0] xor2
+
+*Individual sets
+X_set0 A[0:7] B_star[0:7] op0 GY1 PY1 S[0:7] bit8
+X_set1 A[8:15] B_star[8:15] C1 GY2 PY2 S[8:15] bit8
+X_set2 A[16:23] B_star[16:23] C2 GY3 PY3 S[16:23] bit8
+X_set3 A[24:31] B_star[24:31] C3 GY4 PY4 S[24:31] bit8
+
+*16 BITS
+X_GP1 GY2 PY2 PY1 GY1 op0 GC PC C1 Y
+X_GP2 GY4 PY4 PY3 GY3 C2 GB PB C3 Y
+
+*32 BITS
+X_FINAL GB PB PC GC op0 GHL PHL C2 Y
+
+*V
+X_inv1 S31 inverted_S31 inverter
+X_inv2 A31 inverted_A31 inverter
+X_inv3 B_star31 inverted_Bstar31 inverter
+X_and1 A31 B_star31 inverted_S31 inv_v1 nand3
+Xinv_and1 inv_v1 v1 inverter
+X_and2 inverted_A31 inverted_Bstar31 S31 inv_v2 nand3
+Xinv_and2 inv_v2 v2 inverter
+X_or v1 v2 v OR
+
+*N
+.connect n S31
+
+*Z
+X_OR1 S[31:16] S[15:0] Z1[15:0] or2
+X_OR2 Z1[15:8] Z1[7:0] Z2[7:0] or2
+X_OR3 Z2[7:4] Z2[3:0] Z3[3:0] or2
+X_OR4 Z3[3:2] Z3[1:0] Z4[1:0] or2
+X_NOR Z4[1] Z4[0] z nor2
+.ends

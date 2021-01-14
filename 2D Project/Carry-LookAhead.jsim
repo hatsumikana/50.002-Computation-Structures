@@ -1,0 +1,103 @@
+.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\nominal.jsim"
+.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\stdcell.jsim"
+.include "C:\Users\kanan\Desktop\Comp Struct\2dcheckoff_2p3ns.jsim"
+*.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\lab3adder.jsim"
+
+*OR gate
+.subckt OR a b out1
+X_nand1 a a a_out nand2
+X_nand2 b b b_out nand2
+X_nand3 a_out b_out out1 nand2
+.ends
+
+*AND gate
+.subckt AND a b out2
+X_nand4 a b ab_out nand2
+X_nand5 ab_out ab_out out2 nand2
+.ends
+
+*XOR gate
+.subckt XOR a b out3
+X_nand6 a b ab nand2
+X_nand7 a ab a_ab nand2
+X_nand8 a_ab b out nand2
+X_nand9 a_ab out out3 nand2
+.ends
+
+*Block X
+.subckt X a b ci gi pi s 
+X_AND1 a b gi AND
+X_OR1 a b pi OR
+X_XOR1 a b z XOR
+X_XOR2 z ci si XOR
+.ends
+
+*Block Y
+.subckt Y Gh Ph PL GL CL GHL PHL CH
+X_AND1 Ph GL z AND
+X_OR1 Gh z GHL OR
+X_AND2 Ph PL PHL AND
+X_AND3 CL PL y AND
+X_OR y GL CH OR
+.ends
+
+.subckt firstLayer C0 J[7:0] K[7:0] s[7:0] GHL6 PHL6
+*first layer
+X_X J[7:0] K[7:0] C[7:0] g[7:0] p[7:0] s[7:0] X
+X_Y0 g1 p1 p0 g0 C0 GHL10 PHL10 C1 Y
+X_Y1 g3 p3 p2 g2 C2 GHL32 PHL32 C3 Y
+X_Y2 g5 p5 p4 g4 C4 GHL54 PHL54 C5 Y
+X_Y3 g7 p7 p6 g6 C6 GHL76 PHL76 C7 Y
+
+*second layer
+X_Y4 GHL32 PHL32 PHL10 GHL10 C0 GHL4 PHL4 C2 Y
+X_Y5 GHL76 PHL76 PHL54 GHL54 C4 GHL5 PHL5 C6 Y
+
+*third layer
+X_Y6 GHL5 PHL5 PHL4 GHL4 C0 GHL6 PHL6 C4 Y
+.ends
+
+.subckt adder32 op0 A[31:0] B[31:0] S[31:0] z v n
+X_firstSet op0 A[7:0] B[7:0] S[7:0] GHL6 PHL6 firstLayer
+X_secondSet C8 A[15:8] B[15:8] S[15:8] GHL12 PHL12 firstLayer
+X_thirdSet C16 A[23:16] B[23:16] S[23:16] GHL18 PHL18 firstLayer
+X_fourthSet C24 A[31:24] B[31:24] S[31:24] GHL24 PHL24 firstLayer
+
+X_Y7 GHL12 PHL12 PHL6 GHL6 op0 GHL126 PHL126 C8 Y
+X_Y8 GHL24 PHL24 PHL18 GHL18 C16 GHL2418 PHL2418 C24 Y
+
+X_Y9 GHL2418 PHL2418 PHL126 GHL126 op0 GHLfinal PHLfinal C16 Y
+
+
+* V
+X_inv1 s31 inverted_S31 inverter
+X_inv2 A31 inverted_A31 inverter
+X_inv3 B_star31 inverted_Bstar31 inverter
+X_and1 A31 B_star31 inverted_S31 v1 and3
+X_and2 inverted_A31 inverted_Bstar31 s31 v2 and3
+X_or v1 v2 v OR
+
+*N
+.connect n s31
+
+*Z
+X_OR1 s[31:16] s[15:0] Z1[15:0] OR
+X_OR2 Z1[15:8] Z1[7:0] Z2[7:0] OR
+X_OR3 Z2[7:4] Z2[3:0] Z3[3:0] OR
+X_OR4 Z3[3:2] Z3[1:0] Z4[1:0] OR
+X_NOR Z4[1] Z4[0] z nor2
+.ends
+
+
+
+
+
+
+
+
+
+
+
+
+
+
