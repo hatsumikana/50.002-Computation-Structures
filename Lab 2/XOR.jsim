@@ -1,0 +1,28 @@
+.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\nominal.jsim"
+.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\8clocks.jsim"
+
+.subckt inv a z
+MPD1 z a 0 0 NENH sw=10 sl=1
+MPU1 z a vdd vdd PENH sw=10 sl=1
+.ends
+
+* XOR gate: input is a b and output is z
+.subckt XOR2 a b z
+MPD1 z a i1 0 NENH sw=8 sl=1
+XinvB b inv_b inv
+MPD2 z inv_b i1 0 NENH sw=8 sl=1
+MPD3 i1 b 0 0 NENH sw=8 sl=1 
+XinvA a inv_a inv
+MPD4 i1 inv_a 0 0 NENH sw=8 sl=1
+
+MPU1 i2 a VDD VDD PENH sw=8 sl=1
+MPU2 z inv_b i2 VDD PENH sw=8 sl=1
+MPU3 i3 b VDD VDD PENH sw=8 sl=1
+MPU4 z inv_a i3 VDD PENH sw=8 sl=1
+.ends
+
+Xtest clk1 clk2 z XOR2
+.tran 20ns
+.plot clk1
+.plot clk2
+.plot L(z)

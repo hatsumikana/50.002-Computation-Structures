@@ -1,0 +1,22 @@
+.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\nominal.jsim"
+.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\8clocks.jsim"
+
+.subckt inv a z
+MPD1 z a 0 0 NENH sw=10 sl=1
+MPU1 z a vdd vdd PENH sw=10 sl=1
+.ends
+
+.subckt OR a b z
+MPU1 Point1 a vdd vdd PENH sw=8 sl=1
+MPU2 z0 b Point1 vdd PENH sw=8 sl=1
+MPD1 z0 a 0 0 NENH sw=8 sl=1
+MPD2 z0 b 0 0 NENH sw=8 sl=1
+XinvA z0 z inv
+.ends
+
+
+Xtest clk1 clk2 z OR
+.tran 20ns
+.plot clk1
+.plot clk2
+.plot L(z)

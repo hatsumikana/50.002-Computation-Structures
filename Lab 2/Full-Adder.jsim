@@ -1,0 +1,69 @@
+.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\nominal.jsim"
+.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\8clocks.jsim"
+.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\lab2checkoff.jsim"
+
+* Inverter
+.subckt inv a z
+MPD1 z a 0 0 NENH sw=10 sl=1
+MPU1 z a vdd vdd PENH sw=10 sl=1
+.ends
+
+* XOR gate: input is a b and output is z
+.subckt XOR2 a b z
+MPD1 z a i1 0 NENH sw=8 sl=1
+XinvB b inv_b inv
+MPD2 z inv_b i1 0 NENH sw=8 sl=1
+MPD3 i1 b 0 0 NENH sw=8 sl=1 
+XinvA a inv_a inv
+MPD4 i1 inv_a 0 0 NENH sw=8 sl=1
+
+MPU1 i2 a VDD VDD PENH sw=8 sl=1
+MPU2 z inv_b i2 VDD PENH sw=8 sl=1
+MPU3 i3 b VDD VDD PENH sw=8 sl=1
+MPU4 z inv_a i3 VDD PENH sw=8 sl=1
+.ends
+
+* OR gate
+.subckt OR a b z
+MPU1 Point1 a vdd vdd PENH sw=8 sl=1
+MPU2 z0 b Point1 vdd PENH sw=8 sl=1
+MPD1 z0 a 0 0 NENH sw=8 sl=1
+MPD2 z0 b 0 0 NENH sw=8 sl=1
+XinvA z0 z inv
+.ends
+
+* AND gate
+.subckt AND a b z
+MPU1 z0 a vdd vdd PENH sw=8 sl=1
+MPU2 z0 b vdd vdd PENH sw=8 sl=1
+
+MPD1 z0 a point1 0 NENH sw=8 sl=1
+MPD2 point1 b 0 0 NENH sw=8 sl=1
+XinvA z0 z inv
+.ends
+
+.subckt FA a b ci s co
+X_XOR1 ci out_XOR1 s XOR2
+X_XOR2 a b out_XOR1 XOR2
+X_AND1 a b out_OR AND
+X_AND2 ci out_XOR1 out_OR2 AND
+X_OR out_OR out_OR2 co OR
+.ends
+
+.subckt ADDER4 a3 a2 a1 a0 b3 b2 b1 b0 s4 s3 s2 s1 s0
+* remember the node named "0" is the ground node
+* nodes c0 through c3 are internal to the ADDER module
+Xbit0 a0 b0 0 s0 c0 FA
+Xbit1 a1 b1 c0 s1 c1 FA
+Xbit2 a2 b2 c1 s2 c2 FA
+Xbit3 a3 b3 c2 s3 s4 FA
+.ends
+.plot Xtest.co
+
+
+
+
+
+
+
+
