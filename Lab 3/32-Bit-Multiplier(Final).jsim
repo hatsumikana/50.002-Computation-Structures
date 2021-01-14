@@ -1,0 +1,89 @@
+.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\nominal.jsim"
+.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\stdcell.jsim"
+.include "C:\Users\kanan\Desktop\Comp Struct\32Bit-Full-Adder.jsim"
+.include "C:\Users\kanan\Desktop\Comp Struct\32Bit-Boolean.jsim"
+.include "C:\Users\kanan\Desktop\Comp Struct\32Bit-Comparator.jsim"
+.include "C:\Users\kanan\Desktop\Comp Struct\32Bit-Shifter.jsim"
+.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\lab3checkoff_10.jsim"
+
+.subckt alu ALUFN[5:0] A[31:0] B[31:0] alu[31:0] z v n
+X_Boolean ALUFN[3:0] A[31:0] B[31:0] boole[31:0] boole32
+X_Shifter ALUFN[1:0] A[31:0] B[4:0] shift[31:0] shift32 
+X_Comparator ALUFN[2:1] z v n cmp[31:0] compare32 
+X_ARITH ALUFN[1:0] A[31:0] B[31:0] arith[31:0] z v n arith32
+X_ALU ALUFN5#32 ALUFN4#32 arith[31:0] shift[31:0] boole[31:0] cmp[31:0] alu[31:0] mux4
+.ends
+
+.subckt arith32 ALUFN[1:0] A[31:0] B[31:0] P[31:0] z v n
+X_Adder ALUFN[0] A[31:0] B[31:0] ari[31:0] z v n adder32
+X_MUL A[31:0] B[31:0] MULTIPLY[31:0] mul32
+X_MUX ALUFN1#32 ari[31:0] MULTIPLY[31:0] P[31:0] mux2 
+.ends
+
+.subckt mul32 A[31:0] B[31:0] alu[31:0] 
+x_B0 A[31:0] B0#32 A[31:0]B0 and2 
+X_B1 A[31:0] B1#32 A[31:0]B1 and2
+X_B2 A[31:0] B2#32 A[31:0]B2 and2
+X_B3 A[31:0] B3#32 A[31:0]B3 and2
+X_B4 A[31:0] B4#32 A[31:0]B4 and2
+X_B5 A[31:0] B5#32 A[31:0]B5 and2
+X_B6 A[31:0] B6#32 A[31:0]B6 and2
+X_B7 A[31:0] B7#32 A[31:0]B7 and2
+X_B8 A[31:0] B8#32 A[31:0]B8 and2
+X_B9 A[31:0] B9#32 A[31:0]B9 and2
+X_B10 A[31:0] B10#32 A[31:0]B10 and2
+X_B11 A[31:0] B11#32 A[31:0]B11 and2
+X_B12 A[31:0] B12#32 A[31:0]B12 and2
+X_B13 A[31:0] B13#32 A[31:0]B13 and2
+X_B14 A[31:0] B14#32 A[31:0]B14 and2
+X_B15 A[31:0] B15#32 A[31:0]B15 and2
+X_B16 A[31:0] B16#32 A[31:0]B16 and2
+X_B17 A[31:0] B17#32 A[31:0]B17 and2
+X_B18 A[31:0] B18#32 A[31:0]B18 and2
+X_B19 A[31:0] B19#32 A[31:0]B19 and2
+X_B20 A[31:0] B20#32 A[31:0]B20 and2
+X_B21 A[31:0] B21#32 A[31:0]B21 and2
+X_B22 A[31:0] B22#32 A[31:0]B22 and2
+X_B23 A[31:0] B23#32 A[31:0]B23 and2
+X_B24 A[31:0] B24#32 A[31:0]B24 and2
+X_B25 A[31:0] B25#32 A[31:0]B25 and2
+X_B26 A[31:0] B26#32 A[31:0]B26 and2
+X_B27 A[31:0] B27#32 A[31:0]B27 and2
+X_B28 A[31:0] B28#32 A[31:0]B28 and2
+X_B29 A[31:0] B29#32 A[31:0]B29 and2
+X_B30 A[31:0] B30#32 A[31:0]B30 and2
+X_B31 A[31:0] B31#32 A[31:0]B31 and2
+                        
+** Get the adder outputs
+X_FAdd1 0 A[31:0]B0 A[30:0]B1 0 S1[31:0] z1 v1 n1 adder32 
+X_FAdd2 0 S1[31:0] A[29:0]B2 0#2 out2[31:0] z2 v2 n2 adder32 
+X_FAdd3 0 out2[31:0] A[28:0]B3 0#3 S3[31:0] z3 v3 n3 adder32 
+X_FAdd4 0 S3[31:0] A[27:0]B4 0#4 S4[31:0] z4 v4 n4 adder32 
+X_FAdd5 0 S4[31:0] A[26:0]B5 0#5 S5[31:0] z5 v5 n5 adder32 
+X_FAdd6 0 S5[31:0] A[25:0]B6 0#6 S6[31:0] z6 v6 n6 adder32 
+X_FAdd7 0 S6[31:0] A[24:0]B7 0#7 S7[31:0] z7 v7 n7 adder32
+X_FAdd8 0 S7[31:0] A[23:0]B8 0#8 S8[31:0] z8 v8 n8 adder32 
+X_FAdd9 0 S8[31:0] A[22:0]B9 0#9 S9[31:0] z9 v9 n9 adder32
+X_FAdd10 0 S9[31:0] A[21:0]B10 0#10 S10[31:0] z10 v10 n10 adder32
+X_FAdd11 0 S10[31:0] A[20:0]B11 0#11 outp11[31:0] z11 v11 n11 adder32 
+X_FAdd12 0 outp11[31:0] A[19:0]B12 0#12 output12[31:0] z12 v12 n12 adder32 
+X_FAdd13 0 output12[31:0] A[18:0]B13 0#13 SS13[31:0] z13 v13 n13 adder32 
+X_FAdd14 0 SS13[31:0] A[17:0]B14 0#14 S14[31:0] z14 v14 n14 adder32 
+X_FAdd15 0 S14[31:0] A[16:0]B15 0#15 S15[31:0] z15 v15 n15 adder32 
+X_FAdd16 0 S15[31:0] A[15:0]B16 0#16 S16[31:0] z16 v16 n16 adder32 
+X_FAdd17 0 S16[31:0] A[14:0]B17 0#17 S17[31:0] z17 v17 n17 adder32 
+X_FAdd18 0 S17[31:0] A[13:0]B18 0#18 S18[31:0] z18 v18 n18 adder32 
+X_FAdd19 0 S18[31:0] A[12:0]B19 0#19 S19[31:0] z19 v19 n19 adder32 
+X_FAdd20 0 S19[31:0] A[11:0]B20 0#20 S20[31:0] z20 v20 n20 adder32 
+X_FAdd21 0 S20[31:0] A[10:0]B21 0#21 S21[31:0] z21 v21 n21 adder32 
+X_FAdd22 0 S21[31:0] A[9:0]B22 0#22 S22[31:0] z22 v22 n22 adder32 
+X_FAdd23 0 S22[31:0] A[8:0]B23 0#23 S23[31:0] z23 v23 n23 adder32 
+X_FAdd24 0 S23[31:0] A[7:0]B24 0#24 S24[31:0] z24 v24 n24 adder32 
+X_FAdd25 0 S24[31:0] A[6:0]B25 0#25 S25[31:0] z25 v25 n25 adder32
+X_FAdd26 0 S25[31:0] A[5:0]B26 0#26 S26[31:0] z26 v26 n26 adder32 
+X_FAdd27 0 S26[31:0] A[4:0]B27 0#27 S27[31:0] z27 v27 n27 adder32
+X_FAdd28 0 S27[31:0] A[3:0]B28 0#28 S28[31:0] z28 v28 n28 adder32
+X_FAdd29 0 S28[31:0] A[2:0]B29 0#29 S29[31:0] z29 v29 n29 adder32 
+X_FAdd30 0 S29[31:0] A[1:0]B30 0#30 S30[31:0] z30 v30 n30 adder32 
+X_FAdd31 0 S30[31:0] A0B31 0#31 alu[31:0] z31 v31 n31 adder32
+.ends

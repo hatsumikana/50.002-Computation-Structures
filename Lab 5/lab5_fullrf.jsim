@@ -1,0 +1,32 @@
+.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\nominal.jsim"
+.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\stdcell.jsim"
+.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\lab5regfile.jsim"
+
+.subckt regfile clk werf ra2sel wasel ra[4:0] rb[4:0] rc[4:0]
++ wdata[31:0] radata[31:0] rbdata[31:0]
+
+//Regfile
+Xregfile
++ vdd 0 0 ra[4:0] adata[31:0]     // A read port
++ vdd 0 0 RA2SEL_out[4:0] bdata[31:0] // B read port
++ 0 clk werf rc[4:0] wdata[31:0]  // write port
++ $memory width=32 nlocations=31
+
+// RA2SEL mux
+Xra2selmux ra2sel#5 rb[4:0] rc[4:0] RA2SEL_out[4:0] mux2
+
+// WASEL mux
+Xwaselmux wasel#5 rc[4:0] vdd#4 0 WASEL_out[4:0] mux2
+
+// Check Ra if it is equals to 31
+Xand4_ra ra4 ra3 ra2 ra1 and4_raout and4
+Xand2_ra and4_raout ra0 ra_31 and2
+
+// Check ra2sel_out if it is 31
+Xand4_ra2sel RA2SEL_out4 RA2SEL_out3 RA2SEL_out2 RA2SEL_out1 and4_RA2SELout and4
+Xand2_ra2sel and4_RA2SELout RA2SEL_out0 RA2SEL_31 and2
+
+// muxes to select output from regfile or 0#32
+Xradata_mux ra_31#32 adata[31:0] 0#32 radata[31:0] mux2
+Xrbdata_mux RA2SEL_31#32 bdata[31:0] 0#32 rbdata[31:0] mux2
+.ends

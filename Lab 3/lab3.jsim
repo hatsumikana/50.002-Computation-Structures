@@ -1,0 +1,24 @@
+.include "nominal.jsim"
+.include "stdcell.jsim"
+.include "lab3boolean.jsim"
+.include "lab3compare.jsim"
+
+.subckt boole32 ALUFN[3:0] A[31:0] B[31:0] boole[31:0]
+Xmux0 A0 B0 ALUFN0 ALUFN1 ALURFN2 ALUFN3 boole mux4
+Xmux1 A0 B0 ALUFN0 ALUFN1 ALURFN2 ALUFN3 boole mux4
+
+....
+
+*One line code for boolean
+Xmuxes A[31:0] B[31:0] ALUFN0#32 ALUFN1#32 ALUFN2#32 ALUFN3#32 boole[31:0] mux4
+.ends
+
+
+*Compare
+.subckt compare32 ALUFN[2:1] z v n cmp[31:0]
+*  .connect cmp[31:1] 0 < -- this is used to check if it compiled
+Xxornv v n vxorn xor2
+Xorz vxorn z orz or2
+*Multiplexer
+Xmux ALUFN2 ALUFN1 0 vxorn z orz cmp0 mux4
+.ends

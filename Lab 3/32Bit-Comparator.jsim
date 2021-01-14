@@ -1,0 +1,12 @@
+*.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\nominal.jsim"
+*.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\stdcell.jsim"
+*.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\lab3compare.jsim"
+
+.subckt compare32 ALUFN[2:1] z v n cmp[31:0]
+.connect cmp[31:1] 0 
+X_XOR n v xor xor2
+X_OR xor z or or2
+
+*Multiplexer
+Xmux ALUFN2 ALUFN1 0 xor z or cmp0 mux4
+.ends

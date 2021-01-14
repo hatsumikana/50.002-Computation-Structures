@@ -1,0 +1,41 @@
+*.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\nominal.jsim"
+*.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\stdcell.jsim"
+*.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\lab3adder.jsim"
+
+* 1 Bit Full Adder
+.subckt FA a b ci s co
+X_XOR1 ci out_XOR1 s xor2
+X_XOR2 a b out_XOR1 xor2
+X_AND1 a b out_OR and2
+X_AND2 ci out_XOR1 out_OR2 and2
+X_OR out_OR out_OR2 co or2
+.ends
+
+.subckt adder32 ALUFN[0] A[31:0] B[31:0] s[31:0] z v n
+
+* XOR for B
+X_XOR ALUFN0#32 B[31:0] B_Star[31:0] xor2
+
+* FA
+Xfirst_adder A0 B_Star0 ALUFN0 s0 C0 FA
+Xnext_adder A[31:1] B_Star[31:1] C[30:0] s[31:1] C[31:1] FA
+
+* V
+X_inv1 s31 inverted_S31 inverter
+X_inv2 A31 inverted_A31 inverter
+X_inv3 B_star31 inverted_Bstar31 inverter
+X_and1 A31 B_star31 inverted_S31 v1 and3
+X_and2 inverted_A31 inverted_Bstar31 s31 v2 and3
+X_or v1 v2 v or2
+
+*N
+.connect n s31
+
+*Z
+X_OR1 s[31:16] s[15:0] Z1[15:0] or2
+X_OR2 Z1[15:8] Z1[7:0] Z2[7:0] or2
+X_OR3 Z2[7:4] Z2[3:0] Z3[3:0] or2
+X_OR4 Z3[3:2] Z3[1:0] Z4[1:0] or2
+X_NOR Z4[1] Z4[0] z nor2
+
+.ends

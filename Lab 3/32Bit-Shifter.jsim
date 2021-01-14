@@ -1,0 +1,30 @@
+*.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\nominal.jsim"
+*.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\stdcell.jsim"
+*.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\lab3shifter.jsim"
+
+.subckt shift32 ALUFN[1:0] A[31:0] B[4:0] shift[31:0]
+
+* Left Shift Logic
+Xmux1 B4#32 A[31:0] A[15:0] 0#16 W_left[31:0] mux2
+Xmux2 B3#32 W_left[31:0] W_left[23:0] 0#8 X_left[31:0] mux2
+Xmux3 B2#32 X_left[31:0] X_left[27:0] 0#4 Y_left[31:0] mux2
+Xmux4 B1#32 Y_left[31:0] Y_left[29:0] 0#2 Z_left[31:0] mux2
+Xmux5 B0#32 Z_left[31:0] Z_left[30:0] 0 SL_left[31:0] mux2
+
+* Right Shift Logic
+Xmux6 B4#32 A[31:0] 0#16 A[31:16] W_right[31:0] mux2 
+Xmux7 B3#32 W_right[31:0] 0#8 W_right[31:8] X_right[31:0] mux2
+Xmux8 B2#32 X_right[31:0] 0#4 X_right[31:4] Y_right[31:0] mux2
+Xmux9 B1#32 Y_right[31:0] 0#2 Y_right[31:2] Z_right[31:0] mux2
+Xmux10 B0#32 Z_right[31:0] 0 Z_right[31:1] SL_right[31:0] mux2
+
+* Right Shift Arithmetic Logic
+Xmux11 B4#32 A[31:0] A[31]#16 A[31:16] W_RA[31:0] mux2 
+Xmux12 B3#32 W_RA[31:0] W_RA[31]#8 W_RA[31:8] X_RA[31:0] mux2
+Xmux13 B2#32 X_RA[31:0] X_RA[31]#4 X_RA[31:4] Y_RA[31:0] mux2
+Xmux14 B1#32 Y_RA[31:0] Y_RA[31]#2 Y_RA[31:2] Z_RA[31:0] mux2
+Xmux15 B0#32 Z_RA[31:0] Z_RA[31] Z_RA[31:1] SL_RA[31:0] mux2
+
+Xmuxshifter ALUFN1#32 ALUFN0#32 SL_left[31:0] 0#32 SL_right[31:0] SL_RA[31:0] shift[31:0] mux4   
+
+.ends

@@ -1,0 +1,16 @@
+.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\nominal.jsim"
+.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\stdcell.jsim"
+.include "C:\Users\kanan\Desktop\Comp Struct\50002\50002\lab5pc.jsim"
+.include "C:\Users\kanan\Desktop\Comp Struct\32Bit-Full-Adder.jsim"
+
+.subckt pc clk reset ia[31:0]
+//PC+4 module
+Xplusfour 0 ia[31:0] 0#29 vdd 0#2 ia_plusfour[31:0] n[2:0] adder32
+
+// Reset mux
+Xreset_mux reset#32 ia_plusfour[31:0] 0#32 d_reg[31:0] mux2
+
+// Register to store PC address
+Xdreg d_reg[31:0] clk#32 ia[31:0] dreg
+
+.ends

@@ -1,0 +1,133 @@
+.include /50002/beta.uasm
+.include /50002/lab7macros.uasm
+.include /50002/lab7checkoff.uasm
+
+||| Handler for opcode 1 extension:
+||| swapreg(RA,RC) swaps the contents of the two named registers.
+||| UASM defn = .macro swapreg(RA,RC) betaopc(0x01,RA,0,RC)
+
+regs:   RESERVE(32)                  | Array used to store register contents
+
+UI: 
+        save_all_regs(regs)
+ 
+        LD(xp,-4,r0)                          | illegal instruction
+        extract_field(r0, 31, 26, r1)   | extract opcode, bits 31:26
+        CMPEQC(r1,0x1,r2)             | OPCODE=0b010001
+        BT(r2, swapreg)                    | yes, handle the swapreg instruction.
+
+        LD(r31,regs,r0)                     | It’s something else.  Restore regs
+        LD(r31,regs+4,r1)                 | we've used, and go to the system's
+        LD(r31,regs+8,r2)                 | Illegal Instruction handler.
+        BR(_IllegalInstruction)
+
+swapreg:
+        extract_field(r0, 25, 21, r1)   | extract rc field
+        MULC(r1, 4, r1)                    | convert to byte offset into regs array
+        extract_field(r0, 20, 16, r2)   | extract ra
+        MULC(r2, 4, r2)                    | convert to byte offset into regs array
+        LD(r1, regs, r3)                     | r3 <- regs[rc]
+        LD(r2, regs, r4)                     | r4 <- regs[ra]
+        ST(r4, regs, r1)                     | regs[rc] <- old regs[ra]
+        ST(r3, regs, r2)                     | regs[ra] <- old regs[rc]
+        
+        restore_all_regs(regs)
+        JMP(xp)
+
+LDB:
+	extract_field(r0,20,16,r1) | extract ra, bits 20:16
+        MULC(r1,4,r1)
+        ADDC(r1,regs,r1)
+        LD(r1,0,r1)
+        extract_field(r0,15,0,r2) | extract SEXT(literal), bits 15:0
+        SHLC(r2,16,r2)
+        SRAC(r2,16,r2)
+        ADD(r1,r2,r3) | Reg[Ra] + SEXT(literal)
+        LD(r3,0,r4)
+
+        extract_field(r3,1,0,r5) 
+        BEQ(r5,LDB_0b00,r31) | EA = 0b00
+        SUBC(r5,1,r5)
+        BEQ(r5,LDB_0b01,r31) | EA = 0b01
+        SUBC(r5,1,r5)
+        BEQ(r5,LDB_0b10,r31) | EA = 0b10
+        SUBC(r5,1,r5)
+        BEQ(r5,LDB_0b11,r31) | EA = 0b11
+
+LDB_0b00:
+        extract_field(r4,7,0,r8) | extract MDATA[7:0]
+        BR(ASSIGN_TO_RC)
+
+LDB_0b01: 
+        extract_field(r4,15,8,r8) | extract MDATA[15:8]
+        BR(ASSIGN_TO_RC)
+
+LDB_0b10:
+        extract_field(r4,23,16,r8) | extract MDATA[23:16]
+        BR(ASSIGN_TO_RC)
+
+LDB_0b11:
+        extract_field(r4,31:24,r8) | extract MDATA[31:24]
+        BR(ASSIGN_TO_RC)
+
+ASSIGN_TO_RC:
+        extract_field(r0, 25, 21, r9) | extract rc field
+        MULC(r9,4,r9)
+        ST(r8,regs,r9)
+        restore_all_regs(regs)
+        JMP(xp)
+
+STB:
+        extract_field(r0,20,16,r1) | extract ra, bits 20:16
+        MULC(r1,4,r1)
+        ADDC(r1,regs,r1)
+        LD(r1,0,r1)
+        extract_field(r0,15,0,r2) | extract SEXT(literal), bits 15:0
+        SHLC(r2,16,r2)
+        SRAC(r2,16,r2)
+        ADD(r1,r2,r3) | Reg[Ra] + SEXT(literal)
+        LD(r3,0,r4)
+
+        extract_field(r4,31,24,r10)
+        extract_field(r4,23,16,r11)
+        extract_field(r4,25,8,r12)
+        extract_field(r4,7,0,r13)
+        extract_field(r0,25,21,r8) | extract rc
+        MULC(r13,4,r8)
+        ADDC(r8,regs,r8)
+        LD(r8,0,r8)
+        SHLC(r8,24,r8)
+        SHRC(r8,24,r8)
+
+        extract_field(r3,1,0,r5) | extract EA
+
+        BEQ(r5,STB_0b00,r31) | EA = 0b00
+        SUBC(r5,1,r5)
+        BEQ(r5,STB_0b01,r31) | EA = 0b01
+        SUBC(r5,1,r5)
+        BEQ(r5,STB_0b10,r31) | EA = 0b10
+        SUBC(r5,1,r5)
+        BEQ(r5,STB_0b11,r31) | EA = 0b11
+
+STB_0b00:
+        MOVE(r8,r13)
+        BR()
+
+STB_0b01:
+        MOVE(r8,r12)
+        BR()
+        
+
+STB_0b10:
+        MOVE(r8,r11)
+        BR()
+        
+
+STB_0b11:
+        MOVE(r8,r10)
+        BR()
+        
+
+
+
+
